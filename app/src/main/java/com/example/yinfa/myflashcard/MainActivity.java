@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         findViewById(R.id.answer).setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View v){
