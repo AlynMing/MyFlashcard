@@ -6,12 +6,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
 
+public class MainActivity extends AppCompatActivity {
+    FlashcardDatabase flashcardDatabase;
+    List<Flashcard> allFlashcards;
+    int currentCardDisplayedIndex = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        flashcardDatabase = new FlashcardDatabase(getApplicationContext());
+        allFlashcards = flashcardDatabase.getAllCards();
+
+        if(allFlashcards != null && allFlashcards.size()>0){
+            ((TextView)findViewById(R.id.answer)).setText(allFlashcards.get(0).getAnswer());
+            ((TextView)findViewById(R.id.flashcard_question)).setText(allFlashcards.get(0).getQuestion());
+        }
+        findViewById(R.id.Next).setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                currentCardDisplayedIndex ++;
+                if ( currentCardDisplayedIndex > allFlashcards.size()-1){
+                    currentCardDisplayedIndex = 0;
+                }
+                ((TextView)findViewById(R.id.answer)).setText(allFlashcards.get(currentCardDisplayedIndex).getAnswer());
+                ((TextView)findViewById(R.id.flashcard_question)).setText(allFlashcards.get(currentCardDisplayedIndex).getQuestion());
+
+
+            }
+        });
 
         findViewById(R.id.flashcard_question).setOnClickListener(new View.OnClickListener(){
 
@@ -46,9 +69,8 @@ public class MainActivity extends AppCompatActivity {
         if (intent2 != null&& resultCode == RESULT_OK && requestCode == 450) {
             String q = intent2.getExtras().getString("question");
             String a = intent2.getExtras().getString("answer");
-            ((TextView)findViewById(R.id.flashcard_question)).setText(q);
-            ((TextView)findViewById(R.id.answer)).setText(a);
-
+            flashcardDatabase.insertCard(new Flashcard(q,a));
+            allFlashcards = flashcardDatabase.getAllCards();
 
         }
     }
